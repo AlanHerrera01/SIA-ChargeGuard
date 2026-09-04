@@ -1,0 +1,137 @@
+name: chargeguard
+
+x-env-file: &default-env-file
+  - path: .env
+    required: false
+
+x-service-defaults: &service-defaults
+  init: true
+  restart: unless-stopped
+
+services:
+  localstack:
+    image: localstack/localstack:4.3.0
+    <<: *service-defaults
+    ports:
+      - "4566:4566"
+    env_file: *default-env-file
+    environment:
+      AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
+      DEBUG: "0"
+      PERSISTENCE: "0"
+      SERVICES: dynamodb,s3
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          curl --fail --silent http://localhost:4566/_localstack/health
+          | grep --quiet '"dynamodb"'
+          && curl --fail --silent http://localhost:4566/_localstack/health
+          | grep --quiet '"s3"'
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  mock-bank:
+    build:
+      context: ./mock-services/bank
+    <<: *service-defaults
+    ports:
+      - "8001:8001"
+    env_file: *default-env-file
+    volumes:
+      - ./datasets:/app/datasets:ro
+    depends_on:
+      localstack:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import urllib.request;
+          urllib.request.urlopen('http://localhost:8001/health', timeout=2)
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
+  mock-merchant:
+    build:
+      context: ./mock-services/merchant
+    <<: *service-defaults
+    ports:
+      - "8002:8002"
+    env_file: *default-env-file
+    volumes:
+      - ./datasets:/app/datasets:ro
+    depends_on:
+      localstack:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import urllib.request;
+          urllib.request.urlopen('http://localhost:8002/health', timeout=2)
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
+  backend:
+    profiles: [app]
+    build:
+      context: ./backend
+    <<: *service-defaults
+    ports:
+      - "8000:8000"
+    env_file: *default-env-file
+    depends_on:
+      localstack:
+        condition: service_healthy
+      mock-bank:
+        condition: service_healthy
+      mock-merchant:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import urllib.request;
+          urllib.request.urlopen('http://localhost:8000/health', timeout=2)
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+
+  frontend:
+    profiles: [app]
+    build:
+      context: ./frontend
+    <<: *service-defaults
+    ports:
+      - "5173:5173"
+    env_file: *default-env-file
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch('http://localhost:5173').then((response) => {
+            if (!response.ok) process.exit(1)
+          }).catch(() => process.exit(1))
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
