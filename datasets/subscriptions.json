@@ -1,0 +1,16 @@
+[
+  {
+    "subscription_id": "sub_001",
+    "user_id": "usr_demo",
+    "merchant_id": "mrc_netflix",
+    "plan_name": "Standard",
+    "billing_cycle": "monthly",
+    "billing_day": 14,
+    "base_amount_usd": 15.49,
+    "currency": "USD",
+    "status": "active",
+    "started_at": "2026-03-14",
+    "cancelled_at": null,
+    "terms_key": "terms/sub_001.pdf"
+  }
+]

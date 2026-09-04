@@ -1,0 +1,80 @@
+[
+  {
+    "transaction_id": "txn_0026",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_001",
+    "merchant_id": "mrc_netflix",
+    "merchant_name": "Netflix",
+    "amount_usd": 15.49,
+    "currency": "USD",
+    "posted_at": "2026-03-14T09:12:00Z",
+    "description": "NETFLIX.COM  LOS GATOS CA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0026.pdf"
+  },
+  {
+    "transaction_id": "txn_0027",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_001",
+    "merchant_id": "mrc_netflix",
+    "merchant_name": "Netflix",
+    "amount_usd": 15.49,
+    "currency": "USD",
+    "posted_at": "2026-04-14T09:12:00Z",
+    "description": "NETFLIX.COM  LOS GATOS CA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0027.pdf"
+  },
+  {
+    "transaction_id": "txn_0028",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_001",
+    "merchant_id": "mrc_netflix",
+    "merchant_name": "Netflix",
+    "amount_usd": 15.49,
+    "currency": "USD",
+    "posted_at": "2026-05-14T09:12:00Z",
+    "description": "NETFLIX.COM  LOS GATOS CA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0028.pdf"
+  },
+  {
+    "transaction_id": "txn_0029",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_001",
+    "merchant_id": "mrc_netflix",
+    "merchant_name": "Netflix",
+    "amount_usd": 15.49,
+    "currency": "USD",
+    "posted_at": "2026-06-14T09:12:00Z",
+    "description": "NETFLIX.COM  LOS GATOS CA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0029.pdf"
+  },
+  {
+    "transaction_id": "txn_0030",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_001",
+    "merchant_id": "mrc_netflix",
+    "merchant_name": "Netflix",
+    "amount_usd": 15.49,
+    "currency": "USD",
+    "posted_at": "2026-07-14T09:12:00Z",
+    "description": "NETFLIX.COM  LOS GATOS CA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0030.pdf"
+  },
+  {
+    "transaction_id": "txn_0031",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_001",
+    "merchant_id": "mrc_netflix",
+    "merchant_name": "Netflix",
+    "amount_usd": 19.99,
+    "currency": "USD",
+    "posted_at": "2026-08-14T09:12:00Z",
+    "description": "NETFLIX.COM  LOS GATOS CA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0031.pdf"
+  }
+]

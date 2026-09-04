@@ -1,0 +1,11 @@
+Merchant: Netflix
+Subscription ID: sub_001
+Plan: Standard
+Monthly price: $15.49
+Billing cycle: monthly
+
+Price changes:
+Netflix may change subscription pricing, but customers must be notified before the new price takes effect.
+
+Cancellation:
+The subscription remains active until cancelled by the customer.

@@ -1,0 +1,7 @@
+Merchant: Netflix
+Invoice ID: inv_0030
+Transaction ID: txn_0030
+Plan: Standard
+Billing period: 2026-07
+Amount: $15.49
+Date: 2026-07-14
