@@ -14,6 +14,7 @@ class EvidenceResult(BaseModel):
     merchant_name: str
     subscription_id: str
     transaction_id: str
+
     anomaly_type: Literal[
         "PRICE_INCREASE",
         "DUPLICATE_CHARGE",
@@ -30,6 +31,11 @@ class EvidenceResult(BaseModel):
     duplicate_transaction_id: str | None
     duplicate_amount_usd: float | None
     duplicate_seconds_apart: float | None
+
+    cancellation_confirmation_found: bool
+    cancellation_email_uri: str | None
+    cancelled_at: str | None
+    days_after_cancellation: int | None
 
     previous_invoice_uri: str | None
     current_invoice_uri: str | None
@@ -65,6 +71,14 @@ For DUPLICATE_CHARGE, useful evidence can include:
 - same day or very short time interval
 - transaction history
 - invoices, if available
+
+For POST_CANCELLATION, useful evidence can include:
+- subscription status showing cancelled
+- cancellation date
+- cancellation confirmation email
+- a transaction posted after cancellation
+- number of days between cancellation and charge
+- invoice for the post-cancellation charge, if available
 
 Do not invent evidence.
 
@@ -110,7 +124,61 @@ def search_price_change_notice(merchant_name: str) -> bool:
     return False
 
 
-def invoice_exists(invoice_key: str | None) -> bool:
+def search_cancellation_confirmation(
+    subscription_id: str,
+    merchant_name: str,
+) -> tuple[bool, str | None]:
+
+    emails_path = Path("datasets/emails")
+
+    if not emails_path.exists():
+        return False, None
+
+    cancellation_keywords = [
+        "cancelled",
+        "canceled",
+        "cancellation",
+        "subscription has been cancelled",
+        "subscription has been canceled",
+        "will not renew",
+        "no future recurring charges",
+    ]
+
+    for email_file in emails_path.glob("*.eml"):
+        content = email_file.read_text(
+            encoding="utf-8",
+            errors="ignore",
+        ).lower()
+
+        subscription_matches = (
+            subscription_id.lower() in content
+        )
+
+        merchant_matches = (
+            merchant_name.lower() in content
+        )
+
+        cancellation_matches = any(
+            keyword in content
+            for keyword in cancellation_keywords
+        )
+
+        if (
+            cancellation_matches
+            and (
+                subscription_matches
+                or merchant_matches
+            )
+        ):
+            return True, str(email_file)
+
+    return False, None
+
+
+def invoice_exists(
+    invoice_key: str | None,
+) -> bool:
+
     if not invoice_key:
         return False
 
@@ -250,11 +318,34 @@ def analyze_duplicate_evidence(
     )
 
 
+def calculate_days_after_cancellation(
+    cancelled_at: str | None,
+    posted_at: str,
+) -> int | None:
+
+    if not cancelled_at:
+        return None
+
+    cancellation_date = datetime.fromisoformat(
+        cancelled_at
+    ).date()
+
+    transaction_date = parse_timestamp(
+        posted_at
+    ).date()
+
+    return (
+        transaction_date
+        - cancellation_date
+    ).days
+
+
 def gather_evidence(
     anomaly_type: str,
     current_transaction: dict,
     previous_transaction: dict | None,
     terms_key: str | None,
+    subscription: dict | None = None,
 ) -> EvidenceResult:
 
     merchant_id = current_transaction["merchant_id"]
@@ -281,7 +372,9 @@ def gather_evidence(
     )
 
     price_change_notice_found = (
-        search_price_change_notice(merchant_name)
+        search_price_change_notice(
+            merchant_name
+        )
         if anomaly_type == "PRICE_INCREASE"
         else False
     )
@@ -312,6 +405,36 @@ def gather_evidence(
         previous_transaction=previous_transaction,
     )
 
+    cancellation_confirmation_found = False
+    cancellation_email_uri = None
+    cancelled_at = None
+    days_after_cancellation = None
+
+    if (
+        anomaly_type == "POST_CANCELLATION"
+        and subscription
+    ):
+        cancelled_at = subscription.get(
+            "cancelled_at"
+        )
+
+        (
+            cancellation_confirmation_found,
+            cancellation_email_uri,
+        ) = search_cancellation_confirmation(
+            subscription_id=subscription_id,
+            merchant_name=merchant_name,
+        )
+
+        days_after_cancellation = (
+            calculate_days_after_cancellation(
+                cancelled_at=cancelled_at,
+                posted_at=current_transaction[
+                    "posted_at"
+                ],
+            )
+        )
+
     prompt = f"""
 Anomaly type:
 {anomaly_type}
@@ -332,6 +455,13 @@ Previous transaction:
 {
     json.dumps(previous_transaction, indent=2)
     if previous_transaction
+    else "Not available"
+}
+
+Subscription information:
+{
+    json.dumps(subscription, indent=2)
+    if subscription
     else "Not available"
 }
 
@@ -358,6 +488,18 @@ Duplicate amount:
 
 Seconds between suspicious transactions:
 {duplicate_seconds_apart}
+
+Cancellation confirmation found:
+{cancellation_confirmation_found}
+
+Cancellation email URI:
+{cancellation_email_uri}
+
+Cancelled at:
+{cancelled_at}
+
+Days after cancellation:
+{days_after_cancellation}
 
 Previous invoice URI:
 {previous_invoice_uri}
@@ -403,14 +545,15 @@ if __name__ == "__main__":
     ) as file:
         subscriptions = json.load(file)
 
-    # CASO 2: Spotify duplicate charge
-    transaction_id = "txn_0044"
-    anomaly_type = "DUPLICATE_CHARGE"
+    # CASO 3: charge after cancellation
+    transaction_id = "txn_0053"
+    anomaly_type = "POST_CANCELLATION"
 
     current_transaction = next(
         tx
         for tx in transactions
-        if tx["transaction_id"] == transaction_id
+        if tx["transaction_id"]
+        == transaction_id
     )
 
     previous_transactions = sorted(
@@ -418,7 +561,9 @@ if __name__ == "__main__":
             tx
             for tx in transactions
             if tx["subscription_id"]
-            == current_transaction["subscription_id"]
+            == current_transaction[
+                "subscription_id"
+            ]
             and tx["posted_at"]
             < current_transaction["posted_at"]
         ],
@@ -436,7 +581,9 @@ if __name__ == "__main__":
             sub
             for sub in subscriptions
             if sub["subscription_id"]
-            == current_transaction["subscription_id"]
+            == current_transaction[
+                "subscription_id"
+            ]
         ),
         None,
     )
@@ -452,6 +599,7 @@ if __name__ == "__main__":
         current_transaction=current_transaction,
         previous_transaction=previous_transaction,
         terms_key=terms_key,
+        subscription=subscription,
     )
 
     print(result)

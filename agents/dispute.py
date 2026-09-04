@@ -181,44 +181,50 @@ the full duplicated transaction amount.
 
 
 if __name__ == "__main__":
-    # CASO 2: Spotify duplicate charge
+    # CASO 3: charge after cancellation
 
     evidence = [
         EvidenceItem(
-            type="transaction_history",
-            uri=None,
+            type="email",
+            uri="datasets/emails/eml_cancel_sub_005.eml",
             description=(
-                "Transaction txn_0043 charged $10.99 USD "
-                "for Spotify at 08:30 UTC on 2026-08-21."
+                "Cancellation confirmation email for subscription "
+                "sub_005 dated 2026-08-10."
             ),
         ),
         EvidenceItem(
             type="transaction_history",
             uri=None,
             description=(
-                "Transaction txn_0044 charged another "
-                "$10.99 USD for the same Spotify subscription "
-                "at 08:32 UTC on 2026-08-21, only "
-                "120 seconds after txn_0043."
+                "Transaction txn_0053 charged $12.99 USD "
+                "on 2026-08-16, six days after cancellation."
+            ),
+        ),
+        EvidenceItem(
+            type="other",
+            uri=None,
+            description=(
+                "Subscription sub_005 has status cancelled "
+                "with cancelled_at 2026-08-10."
             ),
         ),
     ]
 
     result = prepare_dispute(
-        case_id="case_demo_002",
-        merchant_id="mrc_spotify",
-        merchant_name="Spotify",
+        case_id="case_demo_003",
+        merchant_id="mrc_duolingo",
+        merchant_name="Duolingo",
         user_id="usr_demo",
-        transaction_id="txn_0044",
-        claim_type="duplicate_charge",
-        expected_amount_usd=10.99,
-        actual_amount_usd=10.99,
-        requested_amount_usd=10.99,
+        transaction_id="txn_0053",
+        claim_type="charge_after_cancellation",
+        expected_amount_usd=0.00,
+        actual_amount_usd=12.99,
+        requested_amount_usd=12.99,
         currency="USD",
         anomaly_reason=(
-            "A second Spotify charge of $10.99 was posted "
-            "only two minutes after another $10.99 charge "
-            "for the same subscription."
+            "The subscription was cancelled on 2026-08-10, "
+            "but a $12.99 charge was posted on 2026-08-16, "
+            "six days after cancellation."
         ),
         evidence=evidence,
     )

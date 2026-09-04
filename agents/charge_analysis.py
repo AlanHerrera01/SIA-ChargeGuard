@@ -53,6 +53,9 @@ Important rules:
 - A duplicate charge should normally claim the FULL duplicated amount.
 - For a price increase, the difference should represent the increase
   above the expected historical amount.
+- For a post-cancellation charge, if the subscription was cancelled
+  before the current transaction date, the full current charge is
+  potentially anomalous.
 - If there is insufficient evidence for an anomaly, return NONE.
 """
 
@@ -101,8 +104,12 @@ For DUPLICATE_CHARGE:
 - difference = full amount of the duplicated charge
 
 For POST_CANCELLATION:
+- Check whether subscription.status is "cancelled".
+- Check subscription.cancelled_at.
+- If the current transaction was posted after cancelled_at,
+  classify it as POST_CANCELLATION.
 - expected_amount = 0
-- actual_amount = charge after cancellation
+- actual_amount = current charge
 - difference = full amount of that charge
 """
 
@@ -124,8 +131,8 @@ if __name__ == "__main__":
     with open(subscriptions_path, "r", encoding="utf-8") as file:
         subscriptions = json.load(file)
 
-    # Cambia este ID para probar cada escenario.
-    transaction_id = "txn_0044"
+    # CASO 3: charge after cancellation
+    transaction_id = "txn_0053"
 
     current_transaction = next(
         tx
