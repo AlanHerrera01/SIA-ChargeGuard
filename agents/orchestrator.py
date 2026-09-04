@@ -73,29 +73,206 @@ def wait_for_merchant_response(
     )
 
 
-def run_chargeguard_case(transaction_id: str):
-    transactions_path = Path("datasets/transactions.json")
-    subscriptions_path = Path("datasets/subscriptions.json")
+def build_evidence_items(
+    anomaly_type: str,
+    current_transaction: dict,
+    previous_transaction: dict | None,
+    previous_transactions: list[dict],
+    evidence_result,
+) -> list[EvidenceItem]:
 
-    with open(transactions_path, "r", encoding="utf-8") as file:
+    evidence_items = []
+
+    # ---------------------------------------------------------
+    # PRICE INCREASE
+    # ---------------------------------------------------------
+    if anomaly_type == "PRICE_INCREASE":
+
+        if evidence_result.current_invoice_found:
+            evidence_items.append(
+                EvidenceItem(
+                    type="invoice",
+                    uri=evidence_result.current_invoice_uri,
+                    description=(
+                        f"Current invoice for transaction "
+                        f"{current_transaction['transaction_id']}."
+                    ),
+                )
+            )
+
+        if evidence_result.previous_invoice_found:
+            evidence_items.append(
+                EvidenceItem(
+                    type="invoice",
+                    uri=evidence_result.previous_invoice_uri,
+                    description=(
+                        "Previous invoice showing the historical "
+                        "subscription charge."
+                    ),
+                )
+            )
+
+        previous_amounts = [
+            tx["amount_usd"]
+            for tx in previous_transactions
+        ]
+
+        evidence_items.append(
+            EvidenceItem(
+                type="transaction_history",
+                uri=None,
+                description=(
+                    "Previous recurring charges for the "
+                    f"subscription: {previous_amounts}"
+                ),
+            )
+        )
+
+        if evidence_result.subscription_terms_found:
+            evidence_items.append(
+                EvidenceItem(
+                    type="subscription_terms",
+                    uri=evidence_result.subscription_terms_uri,
+                    description=(
+                        "Subscription terms associated "
+                        "with this subscription."
+                    ),
+                )
+            )
+
+    # ---------------------------------------------------------
+    # DUPLICATE CHARGE
+    # ---------------------------------------------------------
+    elif anomaly_type == "DUPLICATE_CHARGE":
+
+        if (
+            evidence_result.duplicate_transaction_found
+            and previous_transaction
+        ):
+            evidence_items.append(
+                EvidenceItem(
+                    type="transaction_history",
+                    uri=None,
+                    description=(
+                        f"Transaction "
+                        f"{previous_transaction['transaction_id']} "
+                        f"charged "
+                        f"${previous_transaction['amount_usd']:.2f} "
+                        f"{previous_transaction['currency']} "
+                        f"at {previous_transaction['posted_at']}."
+                    ),
+                )
+            )
+
+            evidence_items.append(
+                EvidenceItem(
+                    type="transaction_history",
+                    uri=None,
+                    description=(
+                        f"Transaction "
+                        f"{current_transaction['transaction_id']} "
+                        f"charged another "
+                        f"${current_transaction['amount_usd']:.2f} "
+                        f"{current_transaction['currency']} "
+                        f"at {current_transaction['posted_at']}, "
+                        f"only "
+                        f"{evidence_result.duplicate_seconds_apart:.0f} "
+                        f"seconds after the previous charge."
+                    ),
+                )
+            )
+
+        if evidence_result.previous_invoice_found:
+            evidence_items.append(
+                EvidenceItem(
+                    type="invoice",
+                    uri=evidence_result.previous_invoice_uri,
+                    description=(
+                        "Invoice associated with the first "
+                        "same-day transaction."
+                    ),
+                )
+            )
+
+        if evidence_result.current_invoice_found:
+            evidence_items.append(
+                EvidenceItem(
+                    type="invoice",
+                    uri=evidence_result.current_invoice_uri,
+                    description=(
+                        "Invoice associated with the suspected "
+                        "duplicate transaction."
+                    ),
+                )
+            )
+
+    # ---------------------------------------------------------
+    # POST CANCELLATION
+    # We will complete this when we build case 3.
+    # ---------------------------------------------------------
+    elif anomaly_type == "POST_CANCELLATION":
+
+        evidence_items.append(
+            EvidenceItem(
+                type="transaction_history",
+                uri=None,
+                description=(
+                    f"Charge detected after cancellation: "
+                    f"{current_transaction['transaction_id']}."
+                ),
+            )
+        )
+
+    return evidence_items
+
+
+def run_chargeguard_case(transaction_id: str):
+    transactions_path = Path(
+        "datasets/transactions.json"
+    )
+
+    subscriptions_path = Path(
+        "datasets/subscriptions.json"
+    )
+
+    with open(
+        transactions_path,
+        "r",
+        encoding="utf-8",
+    ) as file:
         transactions = json.load(file)
 
-    with open(subscriptions_path, "r", encoding="utf-8") as file:
+    with open(
+        subscriptions_path,
+        "r",
+        encoding="utf-8",
+    ) as file:
         subscriptions = json.load(file)
 
+    # ---------------------------------------------------------
+    # Find current transaction
+    # ---------------------------------------------------------
     current_transaction = next(
         tx
         for tx in transactions
         if tx["transaction_id"] == transaction_id
     )
 
+    # Subscription can temporarily be missing while
+    # development datasets are incomplete.
     subscription = next(
-        sub
-        for sub in subscriptions
-        if sub["subscription_id"]
-        == current_transaction["subscription_id"]
+        (
+            sub
+            for sub in subscriptions
+            if sub["subscription_id"]
+            == current_transaction["subscription_id"]
+        ),
+        None,
     )
 
+    # ---------------------------------------------------------
+    # Find previous transactions for same subscription
+    # ---------------------------------------------------------
     previous_transactions = sorted(
         [
             tx
@@ -108,16 +285,19 @@ def run_chargeguard_case(transaction_id: str):
         key=lambda tx: tx["posted_at"],
     )
 
-    previous_charges = [
-        tx["amount_usd"]
-        for tx in previous_transactions
-    ]
+    previous_transaction = (
+        previous_transactions[-1]
+        if previous_transactions
+        else None
+    )
 
-    # 1. Analyze charge
+    # =========================================================
+    # 1. CHARGE ANALYSIS
+    # =========================================================
     charge_result = analyze_charge(
-        merchant=current_transaction["merchant_name"],
-        current_charge=current_transaction["amount_usd"],
-        previous_charges=previous_charges,
+        current_transaction=current_transaction,
+        previous_transactions=previous_transactions,
+        subscription=subscription,
     )
 
     if not charge_result.is_anomaly:
@@ -129,77 +309,33 @@ def run_chargeguard_case(transaction_id: str):
             "negotiation": None,
         }
 
-    previous_transaction = (
-        previous_transactions[-1]
-        if previous_transactions
+    # =========================================================
+    # 2. EVIDENCE
+    # =========================================================
+    terms_key = (
+        subscription.get("terms_key")
+        if subscription
         else None
     )
 
-    # 2. Gather evidence
     evidence_result = gather_evidence(
-        merchant_id=current_transaction["merchant_id"],
-        merchant_name=current_transaction["merchant_name"],
-        subscription_id=current_transaction["subscription_id"],
-        transaction_id=current_transaction["transaction_id"],
-        previous_invoice_key=(
-            previous_transaction["invoice_key"]
-            if previous_transaction
-            else None
-        ),
-        current_invoice_key=current_transaction["invoice_key"],
-        terms_key=subscription["terms_key"],
+        anomaly_type=charge_result.type,
+        current_transaction=current_transaction,
+        previous_transaction=previous_transaction,
+        terms_key=terms_key,
     )
 
-    evidence_items = []
-
-    if evidence_result.current_invoice_found:
-        evidence_items.append(
-            EvidenceItem(
-                type="invoice",
-                uri=evidence_result.current_invoice_uri,
-                description=(
-                    f"Current invoice for transaction "
-                    f"{current_transaction['transaction_id']}."
-                ),
-            )
-        )
-
-    if evidence_result.previous_invoice_found:
-        evidence_items.append(
-            EvidenceItem(
-                type="invoice",
-                uri=evidence_result.previous_invoice_uri,
-                description=(
-                    "Previous invoice showing the historical "
-                    "subscription charge."
-                ),
-            )
-        )
-
-    evidence_items.append(
-        EvidenceItem(
-            type="transaction_history",
-            uri=None,
-            description=(
-                f"Previous charges for the subscription: "
-                f"{previous_charges}"
-            ),
-        )
+    evidence_items = build_evidence_items(
+        anomaly_type=charge_result.type,
+        current_transaction=current_transaction,
+        previous_transaction=previous_transaction,
+        previous_transactions=previous_transactions,
+        evidence_result=evidence_result,
     )
 
-    if evidence_result.subscription_terms_found:
-        evidence_items.append(
-            EvidenceItem(
-                type="subscription_terms",
-                uri=evidence_result.subscription_terms_uri,
-                description=(
-                    "Subscription terms associated "
-                    "with this subscription."
-                ),
-            )
-        )
-
-    # 3. Prepare dispute
+    # =========================================================
+    # 3. PREPARE DISPUTE
+    # =========================================================
     dispute_result = prepare_dispute(
         case_id=f"case_{uuid4().hex[:8]}",
         merchant_id=current_transaction["merchant_id"],
@@ -215,26 +351,38 @@ def run_chargeguard_case(transaction_id: str):
         evidence=evidence_items,
     )
 
-    # 4. Submit dispute
-    submitted_dispute = submit_dispute(dispute_result)
+    # =========================================================
+    # 4. SUBMIT DISPUTE
+    # =========================================================
+    submitted_dispute = submit_dispute(
+        dispute_result
+    )
 
-    # 5. Poll merchant until meaningful response
+    # =========================================================
+    # 5. WAIT FOR MERCHANT
+    # =========================================================
     merchant_response = wait_for_merchant_response(
         submitted_dispute["dispute_id"]
     )
 
     negotiation_result = None
 
-    # 6. Human-in-the-loop
+    # =========================================================
+    # 6. HUMAN-IN-THE-LOOP
+    # =========================================================
     if merchant_response["status"] == "counter_offer":
+
         offer = merchant_response["offer"]
 
         negotiation_result = evaluate_counter_offer(
             requested_amount_usd=(
-                merchant_response["requested_amount_usd"]
+                merchant_response[
+                    "requested_amount_usd"
+                ]
             ),
             offered_amount_usd=offer["amount_usd"],
             dispute_reason=charge_result.reason,
+            evidence_summary=evidence_result.summary,
         )
 
     return {
@@ -247,7 +395,14 @@ def run_chargeguard_case(transaction_id: str):
 
 
 if __name__ == "__main__":
-    result = run_chargeguard_case("txn_0031")
+
+    # CASE 2:
+    # Spotify duplicate charge
+    transaction_id = "txn_0031"
+
+    result = run_chargeguard_case(
+        transaction_id
+    )
 
     print("\n--- CHARGE ANALYSIS ---")
     print(result["charge_analysis"])

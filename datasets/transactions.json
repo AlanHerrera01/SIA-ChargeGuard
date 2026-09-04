@@ -8,7 +8,7 @@
     "amount_usd": 15.49,
     "currency": "USD",
     "posted_at": "2026-03-14T09:12:00Z",
-    "description": "NETFLIX.COM  LOS GATOS CA",
+    "description": "NETFLIX.COM LOS GATOS CA",
     "status": "posted",
     "invoice_key": "invoices/inv_0026.pdf"
   },
@@ -21,7 +21,7 @@
     "amount_usd": 15.49,
     "currency": "USD",
     "posted_at": "2026-04-14T09:12:00Z",
-    "description": "NETFLIX.COM  LOS GATOS CA",
+    "description": "NETFLIX.COM LOS GATOS CA",
     "status": "posted",
     "invoice_key": "invoices/inv_0027.pdf"
   },
@@ -34,7 +34,7 @@
     "amount_usd": 15.49,
     "currency": "USD",
     "posted_at": "2026-05-14T09:12:00Z",
-    "description": "NETFLIX.COM  LOS GATOS CA",
+    "description": "NETFLIX.COM LOS GATOS CA",
     "status": "posted",
     "invoice_key": "invoices/inv_0028.pdf"
   },
@@ -47,7 +47,7 @@
     "amount_usd": 15.49,
     "currency": "USD",
     "posted_at": "2026-06-14T09:12:00Z",
-    "description": "NETFLIX.COM  LOS GATOS CA",
+    "description": "NETFLIX.COM LOS GATOS CA",
     "status": "posted",
     "invoice_key": "invoices/inv_0029.pdf"
   },
@@ -60,7 +60,7 @@
     "amount_usd": 15.49,
     "currency": "USD",
     "posted_at": "2026-07-14T09:12:00Z",
-    "description": "NETFLIX.COM  LOS GATOS CA",
+    "description": "NETFLIX.COM LOS GATOS CA",
     "status": "posted",
     "invoice_key": "invoices/inv_0030.pdf"
   },
@@ -73,8 +73,127 @@
     "amount_usd": 19.99,
     "currency": "USD",
     "posted_at": "2026-08-14T09:12:00Z",
-    "description": "NETFLIX.COM  LOS GATOS CA",
+    "description": "NETFLIX.COM LOS GATOS CA",
     "status": "posted",
     "invoice_key": "invoices/inv_0031.pdf"
+  },
+
+  {
+    "transaction_id": "txn_0040",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_003",
+    "merchant_id": "mrc_spotify",
+    "merchant_name": "Spotify",
+    "amount_usd": 10.99,
+    "currency": "USD",
+    "posted_at": "2026-05-21T08:30:00Z",
+    "description": "SPOTIFY USA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0040.pdf"
+  },
+  {
+    "transaction_id": "txn_0041",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_003",
+    "merchant_id": "mrc_spotify",
+    "merchant_name": "Spotify",
+    "amount_usd": 10.99,
+    "currency": "USD",
+    "posted_at": "2026-06-21T08:30:00Z",
+    "description": "SPOTIFY USA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0041.pdf"
+  },
+  {
+    "transaction_id": "txn_0042",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_003",
+    "merchant_id": "mrc_spotify",
+    "merchant_name": "Spotify",
+    "amount_usd": 10.99,
+    "currency": "USD",
+    "posted_at": "2026-07-21T08:30:00Z",
+    "description": "SPOTIFY USA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0042.pdf"
+  },
+  {
+    "transaction_id": "txn_0043",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_003",
+    "merchant_id": "mrc_spotify",
+    "merchant_name": "Spotify",
+    "amount_usd": 10.99,
+    "currency": "USD",
+    "posted_at": "2026-08-21T08:30:00Z",
+    "description": "SPOTIFY USA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0043.pdf"
+  },
+  {
+    "transaction_id": "txn_0044",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_003",
+    "merchant_id": "mrc_spotify",
+    "merchant_name": "Spotify",
+    "amount_usd": 10.99,
+    "currency": "USD",
+    "posted_at": "2026-08-21T08:32:00Z",
+    "description": "SPOTIFY USA",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0044.pdf"
+  },
+
+  {
+    "transaction_id": "txn_0050",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_005",
+    "merchant_id": "mrc_duolingo",
+    "merchant_name": "Duolingo",
+    "amount_usd": 12.99,
+    "currency": "USD",
+    "posted_at": "2026-05-16T10:15:00Z",
+    "description": "DUOLINGO SUPER",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0050.pdf"
+  },
+  {
+    "transaction_id": "txn_0051",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_005",
+    "merchant_id": "mrc_duolingo",
+    "merchant_name": "Duolingo",
+    "amount_usd": 12.99,
+    "currency": "USD",
+    "posted_at": "2026-06-16T10:15:00Z",
+    "description": "DUOLINGO SUPER",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0051.pdf"
+  },
+  {
+    "transaction_id": "txn_0052",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_005",
+    "merchant_id": "mrc_duolingo",
+    "merchant_name": "Duolingo",
+    "amount_usd": 12.99,
+    "currency": "USD",
+    "posted_at": "2026-07-16T10:15:00Z",
+    "description": "DUOLINGO SUPER",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0052.pdf"
+  },
+  {
+    "transaction_id": "txn_0053",
+    "user_id": "usr_demo",
+    "subscription_id": "sub_005",
+    "merchant_id": "mrc_duolingo",
+    "merchant_name": "Duolingo",
+    "amount_usd": 12.99,
+    "currency": "USD",
+    "posted_at": "2026-08-16T10:15:00Z",
+    "description": "DUOLINGO SUPER",
+    "status": "posted",
+    "invoice_key": "invoices/inv_0053.pdf"
   }
 ]

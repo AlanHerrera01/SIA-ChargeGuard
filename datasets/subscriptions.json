@@ -12,5 +12,33 @@
     "started_at": "2026-03-14",
     "cancelled_at": null,
     "terms_key": "terms/sub_001.pdf"
+  },
+  {
+    "subscription_id": "sub_003",
+    "user_id": "usr_demo",
+    "merchant_id": "mrc_spotify",
+    "plan_name": "Premium Individual",
+    "billing_cycle": "monthly",
+    "billing_day": 21,
+    "base_amount_usd": 10.99,
+    "currency": "USD",
+    "status": "active",
+    "started_at": "2026-05-21",
+    "cancelled_at": null,
+    "terms_key": "terms/sub_003.pdf"
+  },
+  {
+    "subscription_id": "sub_005",
+    "user_id": "usr_demo",
+    "merchant_id": "mrc_duolingo",
+    "plan_name": "Super",
+    "billing_cycle": "monthly",
+    "billing_day": 16,
+    "base_amount_usd": 12.99,
+    "currency": "USD",
+    "status": "cancelled",
+    "started_at": "2026-04-16",
+    "cancelled_at": "2026-08-10",
+    "terms_key": "terms/sub_005.pdf"
   }
 ]

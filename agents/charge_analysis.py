@@ -26,16 +26,34 @@ class ChargeAnalysisResult(BaseModel):
 SYSTEM_PROMPT = """
 You are ChargeAnalysisAgent.
 
-Your job is to analyze recurring subscription charges and determine
-whether the current charge is anomalous.
+Your job is to analyze recurring subscription transactions and determine
+whether the current transaction is anomalous.
 
 Possible anomaly types:
-- PRICE_INCREASE
-- DUPLICATE_CHARGE
-- POST_CANCELLATION
-- NONE
 
-Do not invent missing information.
+- PRICE_INCREASE:
+  The current recurring charge is higher than the established historical
+  amount for the same subscription.
+
+- DUPLICATE_CHARGE:
+  The same subscription was charged twice for the same amount within a
+  very short period of time, indicating that the second charge may be
+  duplicated.
+
+- POST_CANCELLATION:
+  A subscription was charged after it had already been cancelled.
+
+- NONE:
+  No anomaly is supported by the available information.
+
+Important rules:
+
+- Use only the information provided.
+- Do not invent missing information.
+- A duplicate charge should normally claim the FULL duplicated amount.
+- For a price increase, the difference should represent the increase
+  above the expected historical amount.
+- If there is insufficient evidence for an anomaly, return NONE.
 """
 
 
@@ -47,18 +65,46 @@ charge_analysis_agent = Agent(
 
 
 def analyze_charge(
-    merchant: str,
-    current_charge: float,
-    previous_charges: list[float],
+    current_transaction: dict,
+    previous_transactions: list[dict],
+    subscription: dict | None = None,
 ) -> ChargeAnalysisResult:
 
     prompt = f"""
-    Merchant: {merchant}
-    Current charge: ${current_charge}
-    Previous charges: {previous_charges}
+Current transaction:
+{json.dumps(current_transaction, indent=2)}
 
-    Analyze whether this charge is anomalous.
-    """
+Previous transactions for the same subscription:
+{json.dumps(previous_transactions, indent=2)}
+
+Subscription information:
+{json.dumps(subscription, indent=2) if subscription else "Not provided"}
+
+Analyze the CURRENT transaction.
+
+Determine whether it is:
+- PRICE_INCREASE
+- DUPLICATE_CHARGE
+- POST_CANCELLATION
+- NONE
+
+Return the appropriate monetary values:
+
+For PRICE_INCREASE:
+- expected_amount = normal historical charge
+- actual_amount = current charge
+- difference = actual_amount - expected_amount
+
+For DUPLICATE_CHARGE:
+- expected_amount = one normal legitimate charge
+- actual_amount = current duplicated charge
+- difference = full amount of the duplicated charge
+
+For POST_CANCELLATION:
+- expected_amount = 0
+- actual_amount = charge after cancellation
+- difference = full amount of that charge
+"""
 
     result = charge_analysis_agent(
         prompt,
@@ -70,34 +116,48 @@ def analyze_charge(
 
 if __name__ == "__main__":
     transactions_path = Path("datasets/transactions.json")
+    subscriptions_path = Path("datasets/subscriptions.json")
 
     with open(transactions_path, "r", encoding="utf-8") as file:
         transactions = json.load(file)
 
-    merchant_id = "mrc_netflix"
+    with open(subscriptions_path, "r", encoding="utf-8") as file:
+        subscriptions = json.load(file)
 
-    merchant_transactions = [
+    # Cambia este ID para probar cada escenario.
+    transaction_id = "txn_0044"
+
+    current_transaction = next(
         tx
         for tx in transactions
-        if tx["merchant_id"] == merchant_id
-    ]
+        if tx["transaction_id"] == transaction_id
+    )
 
-    merchant_transactions = sorted(
-        merchant_transactions,
+    subscription_id = current_transaction["subscription_id"]
+
+    previous_transactions = sorted(
+        [
+            tx
+            for tx in transactions
+            if tx["subscription_id"] == subscription_id
+            and tx["posted_at"] < current_transaction["posted_at"]
+        ],
         key=lambda tx: tx["posted_at"],
     )
 
-    previous_charges = [
-        tx["amount_usd"]
-        for tx in merchant_transactions[:-1]
-    ]
-
-    current_transaction = merchant_transactions[-1]
+    subscription = next(
+        (
+            sub
+            for sub in subscriptions
+            if sub["subscription_id"] == subscription_id
+        ),
+        None,
+    )
 
     result = analyze_charge(
-        merchant=current_transaction["merchant_name"],
-        current_charge=current_transaction["amount_usd"],
-        previous_charges=previous_charges,
+        current_transaction=current_transaction,
+        previous_transactions=previous_transactions,
+        subscription=subscription,
     )
 
     print(result)
