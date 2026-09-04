@@ -1,0 +1,93 @@
+# ==============================
+# Environment & secrets
+# ==============================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+credentials.json
+aws-credentials.json
+
+# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ==============================
+# Node / Frontend
+# ==============================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+frontend/dist/
+frontend/build/
+
+# ==============================
+# Terraform
+# ==============================
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+tfplan
+tfplan.*
+
+# ==============================
+# IDE & OS
+# ==============================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# Logs & temp
+# ==============================
+*.log
+logs/
+tmp/
+temp/
+
+# ==============================
+# AWS SAM / CDK
+# ==============================
+.aws-sam/
+cdk.out/
+
+# ==============================
+# Docker
+# ==============================
+.docker/
