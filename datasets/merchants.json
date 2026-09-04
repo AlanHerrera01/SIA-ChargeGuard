@@ -1,0 +1,132 @@
+[
+  {
+    "merchant_id": "mrc_netflix",
+    "name": "Netflix",
+    "category": "streaming",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": true,
+      "counter_offer_ratio": 0.6,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 50.0,
+      "escalation_outcome": "resolved_full"
+    }
+  },
+  {
+    "merchant_id": "mrc_dropbox",
+    "name": "Dropbox",
+    "category": "cloud_storage",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": false,
+      "counter_offer_ratio": 1.0,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 100.0,
+      "escalation_outcome": "resolved_full"
+    }
+  },
+  {
+    "merchant_id": "mrc_notion",
+    "name": "Notion",
+    "category": "saas",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": true,
+      "counter_offer_ratio": 0.75,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 75.0,
+      "escalation_outcome": "resolved_full"
+    }
+  },
+  {
+    "merchant_id": "mrc_fitlife",
+    "name": "FitLife Gym",
+    "category": "fitness",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": true,
+      "counter_offer_ratio": 0.5,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 80.0,
+      "escalation_outcome": "denied"
+    }
+  },
+  {
+    "merchant_id": "mrc_spotify",
+    "name": "Spotify",
+    "category": "music",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": true,
+      "counter_offer_ratio": 0.6,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 50.0,
+      "escalation_outcome": "resolved_full"
+    }
+  },
+  {
+    "merchant_id": "mrc_dailyledger",
+    "name": "The Daily Ledger",
+    "category": "news",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": false,
+      "counter_offer_ratio": 1.0,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 40.0,
+      "escalation_outcome": "resolved_full"
+    }
+  },
+  {
+    "merchant_id": "mrc_gamebox",
+    "name": "GameBox",
+    "category": "gaming",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": true,
+      "counter_offer_ratio": 0.5,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 60.0,
+      "escalation_outcome": "denied"
+    }
+  },
+  {
+    "merchant_id": "mrc_quickeats",
+    "name": "QuickEats Plus",
+    "category": "delivery",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": true,
+      "counter_offer_ratio": 0.7,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 40.0,
+      "escalation_outcome": "resolved_full"
+    }
+  },
+  {
+    "merchant_id": "mrc_learnsphere",
+    "name": "LearnSphere",
+    "category": "education",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": false,
+      "counter_offer_ratio": 1.0,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 120.0,
+      "escalation_outcome": "resolved_full"
+    }
+  },
+  {
+    "merchant_id": "mrc_safevault",
+    "name": "SafeVault",
+    "category": "security",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": true,
+      "counter_offer_ratio": 0.65,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 50.0,
+      "escalation_outcome": "resolved_full"
+    }
+  }
+]

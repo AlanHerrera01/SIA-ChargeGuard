@@ -1,0 +1,15 @@
+From: support@fitlife.example
+To: demo@chargeguard.dev
+Subject: Cancellation confirmed for sub_005
+Date: Thu, 20 Aug 2026 15:00:00 +0000
+Message-ID: <eml_009@chargeguard.dev>
+X-ChargeGuard-Synthetic: true
+X-ChargeGuard-Message-Type: cancellation_confirmation
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+This is synthetic ChargeGuard demo evidence.
+
+Your FitLife Gym Monthly Access subscription sub_005 was cancelled on 2026-08=
+-20. No further charges are authorized.

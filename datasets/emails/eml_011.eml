@@ -1,0 +1,15 @@
+From: billing@notion.example
+To: demo@chargeguard.dev
+Subject: Upcoming price change for Notion Plus
+Date: Tue, 01 Sep 2026 14:00:00 +0000
+Message-ID: <eml_011@chargeguard.dev>
+X-ChargeGuard-Synthetic: true
+X-ChargeGuard-Message-Type: price_change_notice
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+This is a synthetic ChargeGuard demo notice.
+
+Subscription sub_004 will change from USD 12.00 to USD 13.00 on 2026-10-08. C=
+harges before that date remain USD 12.00.

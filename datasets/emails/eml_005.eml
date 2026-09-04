@@ -1,0 +1,16 @@
+From: receipts@spotify.example
+To: demo@chargeguard.dev
+Subject: Receipt from Spotify
+Date: Wed, 03 Jun 2026 09:12:00 +0000
+Message-ID: <eml_005@chargeguard.dev>
+X-ChargeGuard-Synthetic: true
+X-ChargeGuard-Message-Type: receipt
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+
+This is a synthetic receipt for the ChargeGuard demo.
+
+Transaction: txn_0015
+Amount: USD 10.99
+Posted: 2026-06-03T09:12:00Z

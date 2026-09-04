@@ -1,0 +1,16 @@
+From: receipts@netflix.example
+To: demo@chargeguard.dev
+Subject: Receipt from Netflix
+Date: Tue, 14 Jul 2026 09:10:00 +0000
+Message-ID: <eml_008@chargeguard.dev>
+X-ChargeGuard-Synthetic: true
+X-ChargeGuard-Message-Type: receipt
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+
+This is a synthetic receipt for the ChargeGuard demo.
+
+Transaction: txn_0024
+Amount: USD 15.49
+Posted: 2026-07-14T09:10:00Z
