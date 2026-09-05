@@ -89,8 +89,10 @@ not the current wall clock.
 There is one awaited POST, no retries, no redirects, and a five-second total limit.
 Waiting is necessary to return the contract's `delivered` result. Any 2xx is success:
 `{"delivered":true,"status_code":200}` (the actual status is retained). Connection
-errors, timeout, missing configuration, and non-2xx responses return HTTP 200 with
-`{"delivered":false,"status_code":null,"error":"..."}`. Remote response bodies and
+errors, timeout and missing configuration return HTTP 200 with
+`{"delivered":false,"status_code":null,"error":"..."}`. Non-2xx responses also return
+HTTP 200 with `delivered:false`, but retain the receiver's code in `status_code`
+(for example, 500). Remote response bodies and
 URLs are not echoed in errors. A provided URL overrides `BACKEND_WEBHOOK_URL`.
 
 API errors use `{"error":{"code":"...","message":"..."}}`, including routing and

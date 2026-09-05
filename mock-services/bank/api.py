@@ -273,7 +273,7 @@ def create_app(
         if not response.is_success:
             return {
                 "delivered": False,
-                "status_code": None,
+                "status_code": response.status_code,
                 "error": f"Webhook returned HTTP {response.status_code}",
             }
         return {"delivered": True, "status_code": response.status_code}

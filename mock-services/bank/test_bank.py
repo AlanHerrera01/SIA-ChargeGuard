@@ -299,7 +299,8 @@ async def test_failed_webhooks_always_return_http_200(
         )
         assert response.status_code == 200
         assert response.json()["delivered"] is False
-        assert response.json()["status_code"] is None
+        expected_code = {"http500": 500, "redirect": 302}.get(failure)
+        assert response.json()["status_code"] == expected_code
         assert response.json()["error"]
         assert len(calls) == 1
 
