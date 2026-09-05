@@ -31,7 +31,17 @@ Built for the [AWS Agents for Humans Hackathon 2026](https://agentsforhumans.dev
 
 ## Problem
 
-*[TBD - fill in as we build]*
+Recurring subscriptions can generate unexpected charges that users don't easily notice:
+
+- price increases without clear notification;
+
+- duplicate charges;
+
+- charges made after a subscription has been canceled.
+
+Investigating a charge requires comparing transaction history, reviewing invoices, searching emails, and manually contacting the merchant.
+
+ChargeGuard automates this investigation and prepares the claim, reducing the user's workload and only showing cases that require human intervention.
 
 ## Solution
 
@@ -123,6 +133,7 @@ docker-compose up
 - **Alan Herrera** - Frontend & UX
 - **Ismael** - Infrastructure & DevOps
 - **Stephani Rivera** - Agents & Backend
+- - **Andrea** - Backend
 
 ## License
 
