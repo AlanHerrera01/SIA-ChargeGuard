@@ -8,10 +8,9 @@ Integrates with orchestrator to handle charge analysis and dispute workflow.
 import os
 import sys
 import json
-from typing import Optional
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -20,8 +19,9 @@ project_root = str(Path(__file__).parent.parent)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
+
 from agents.orchestrator import run_chargeguard_case
-from datasets import load_transactions, load_subscriptions, load_merchants
+
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -84,6 +84,13 @@ def load_datasets():
         MERCHANTS = {}
 
 
+def dataset_items(dataset):
+    """Return records for either a JSON array or a wrapped object."""
+    if isinstance(dataset, list):
+        return dataset
+    return next(iter(dataset.values()), []) if isinstance(dataset, dict) else []
+
+
 # Health check endpoint
 @app.get("/health")
 async def health_check():
@@ -110,9 +117,14 @@ async def get_transaction(transaction_id: str):
     if TRANSACTIONS is None:
         raise HTTPException(status_code=500, detail="Transactions data not loaded")
     
-    # transactions.json has a "transactions" array
-    tx_list = TRANSACTIONS.get("transactions", [])
-    transaction = next((tx for tx in tx_list if tx.get("id") == transaction_id), None)
+    tx_list = dataset_items(TRANSACTIONS)
+    transaction = next(
+        (
+            tx for tx in tx_list
+            if tx.get("transaction_id", tx.get("id")) == transaction_id
+        ),
+        None,
+    )
     
     if not transaction:
         raise HTTPException(status_code=404, detail=f"Transaction {transaction_id} not found")
@@ -134,9 +146,14 @@ async def get_subscription(subscription_id: str):
     if SUBSCRIPTIONS is None:
         raise HTTPException(status_code=500, detail="Subscriptions data not loaded")
     
-    # subscriptions.json has a "subscriptions" array
-    sub_list = SUBSCRIPTIONS.get("subscriptions", [])
-    subscription = next((sub for sub in sub_list if sub.get("id") == subscription_id), None)
+    sub_list = dataset_items(SUBSCRIPTIONS)
+    subscription = next(
+        (
+            sub for sub in sub_list
+            if sub.get("subscription_id", sub.get("id")) == subscription_id
+        ),
+        None,
+    )
     
     if not subscription:
         raise HTTPException(status_code=404, detail=f"Subscription {subscription_id} not found")
@@ -171,23 +188,39 @@ async def analyze_case(request: CaseAnalysisRequest):
     transaction_id = request.transaction_id
     
     try:
+        if not any(
+            tx.get("transaction_id", tx.get("id")) == transaction_id
+            for tx in dataset_items(TRANSACTIONS)
+        ):
+            raise HTTPException(
+                status_code=404,
+                detail=f"Transaction {transaction_id} not found",
+            )
+
         # Run the orchestrator (blocks until merchant decision)
         result = run_chargeguard_case(transaction_id)
         
         # Convert result to JSON-serializable format
-        # Result is a CaseResult object from orchestrator
+        # Handle both dict and object responses
+        def to_dict(obj):
+            if isinstance(obj, dict):
+                return obj
+            return obj.__dict__ if hasattr(obj, "__dict__") else {}
+
         return {
-            "case_id": result.case_id if hasattr(result, "case_id") else None,
+            "case_id": result.get("case_id") if isinstance(result, dict) else result.case_id,
             "transaction_id": transaction_id,
-            "charge_analysis": result.charge_analysis.__dict__ if hasattr(result, "charge_analysis") else {},
-            "evidence": result.evidence.__dict__ if hasattr(result, "evidence") else {},
-            "dispute": result.dispute.__dict__ if hasattr(result, "dispute") else {},
-            "merchant_response": result.merchant_response.__dict__ if hasattr(result, "merchant_response") else {},
-            "negotiation": result.negotiation.__dict__ if hasattr(result, "negotiation") else {},
-            "status": result.status if hasattr(result, "status") else "completed",
+            "charge_analysis": result.get("charge_analysis") if isinstance(result, dict) else to_dict(result.charge_analysis),
+            "evidence": result.get("evidence") if isinstance(result, dict) else to_dict(result.evidence),
+            "dispute": result.get("dispute") if isinstance(result, dict) else to_dict(result.dispute),
+            "merchant_response": result.get("merchant_response") if isinstance(result, dict) else to_dict(result.merchant_response),
+            "negotiation": result.get("negotiation") if isinstance(result, dict) else to_dict(result.negotiation),
+            "status": result.get("status") if isinstance(result, dict) else result.status,
         }
     
-    except ValueError as e:
+    except HTTPException:
+        raise
+    except (StopIteration, ValueError) as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Case analysis failed: {str(e)}")
