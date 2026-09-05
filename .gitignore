@@ -52,7 +52,7 @@ frontend/build/
 *.tfstate
 *.tfstate.*
 .terraform/
-.terraform.lock.hcl
+# Provider lock files are committed so local and CI runs use identical versions.
 crash.log
 crash.*.log
 override.tf
