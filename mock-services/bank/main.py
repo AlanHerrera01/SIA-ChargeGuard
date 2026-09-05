@@ -1,9 +1,3 @@
-from fastapi import FastAPI
+from api import create_app
 
-
-app = FastAPI(title="ChargeGuard Mock Bank API", version="0.1.0")
-
-
-@app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok", "dataset_version": "1"}
+app = create_app()
