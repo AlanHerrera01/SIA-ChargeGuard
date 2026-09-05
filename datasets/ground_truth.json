@@ -1,0 +1,35 @@
+{
+  "anomalies": [
+    {
+      "anomaly_id": "anm_001",
+      "type": "price_hike",
+      "transaction_id": "txn_0031",
+      "subscription_id": "sub_001",
+      "expected_amount_usd": 15.49,
+      "actual_amount_usd": 19.99,
+      "delta_usd": 4.5,
+      "notice_given": false,
+      "expected_claim_amount_usd": 4.5
+    },
+    {
+      "anomaly_id": "anm_002",
+      "type": "duplicate_charge",
+      "transaction_id": "txn_0035",
+      "subscription_id": "sub_003",
+      "expected_amount_usd": 0.0,
+      "actual_amount_usd": 10.99,
+      "delta_usd": 10.99,
+      "expected_claim_amount_usd": 10.99
+    },
+    {
+      "anomaly_id": "anm_003",
+      "type": "charge_after_cancellation",
+      "transaction_id": "txn_0032",
+      "subscription_id": "sub_005",
+      "expected_amount_usd": 0.0,
+      "actual_amount_usd": 39.99,
+      "delta_usd": 39.99,
+      "expected_claim_amount_usd": 39.99
+    }
+  ]
+}

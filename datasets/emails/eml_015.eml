@@ -1,0 +1,12 @@
+From: hello@learnsphere.example
+To: demo@chargeguard.dev
+Subject: Courses picked for you
+Date: Wed, 09 Sep 2026 11:00:00 +0000
+Message-ID: <eml_015@chargeguard.dev>
+X-ChargeGuard-Synthetic: true
+X-ChargeGuard-Message-Type: marketing
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+
+Discover synthetic learning recommendations. This is marketing noise.

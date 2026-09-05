@@ -1,0 +1,15 @@
+From: billing@dropbox.example
+To: demo@chargeguard.dev
+Subject: Upcoming price change for Dropbox Plus
+Date: Fri, 28 Aug 2026 13:00:00 +0000
+Message-ID: <eml_010@chargeguard.dev>
+X-ChargeGuard-Synthetic: true
+X-ChargeGuard-Message-Type: price_change_notice
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+This is a synthetic ChargeGuard demo notice.
+
+Subscription sub_002 will change from USD 11.99 to USD 12.99 on 2026-10-02. C=
+harges before that date remain USD 11.99.

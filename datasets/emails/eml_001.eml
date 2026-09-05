@@ -1,0 +1,16 @@
+From: receipts@dropbox.example
+To: demo@chargeguard.dev
+Subject: Receipt from Dropbox
+Date: Thu, 02 Apr 2026 09:11:00 +0000
+Message-ID: <eml_001@chargeguard.dev>
+X-ChargeGuard-Synthetic: true
+X-ChargeGuard-Message-Type: receipt
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+
+This is a synthetic receipt for the ChargeGuard demo.
+
+Transaction: txn_0002
+Amount: USD 11.99
+Posted: 2026-04-02T09:11:00Z
