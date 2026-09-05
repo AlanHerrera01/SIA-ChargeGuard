@@ -133,7 +133,7 @@ docker-compose up
 - **Alan Herrera** - Frontend & UX
 - **Ismael** - Infrastructure & DevOps
 - **Stephani Rivera** - Agents & Backend
-- - **Andrea** - Backend
+- **Andrea** - Backend
 
 ## License
 
