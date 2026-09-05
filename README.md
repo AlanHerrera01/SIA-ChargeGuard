@@ -55,7 +55,7 @@ Anyone with recurring subscriptions (streaming, cloud storage, SaaS tools, gym m
 
 ## AWS Services Used
 
-- Amazon Bedrock (Claude Sonnet 5)
+- Amazon Bedrock (Claude Sonnet 4.5)
 - Amazon Bedrock AgentCore Runtime
 - Amazon DynamoDB
 - Amazon S3
