@@ -162,7 +162,9 @@ Read-only feed over the synthetic dataset, plus a webhook trigger. It never inve
   "data": { /* full transaction object */ }
 }
 ```
-Delivery is fire-and-forget with a 5s timeout. On failure return `{"delivered": false, "status_code": null, "error": "..."}` with HTTP 200 — the demo must not crash because the backend is down.
+`occurred_at` equals the transaction's `posted_at`, not the webhook send time: synthetic event time stays reproducible and must not be interpreted as "now" by consumers.
+
+Delivery makes one awaited attempt with a 5s timeout. On failure return `{"delivered": false, "status_code": null, "error": "..."}` with HTTP 200 — the demo must not crash because the backend is down. If the receiver returned an HTTP response (including non-2xx), preserve its actual code in `status_code`; use `null` only when no response was received.
 
 ---
 
