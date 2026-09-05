@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from pathlib import Path
 from uuid import uuid4
@@ -11,7 +12,11 @@ from agents.dispute import EvidenceItem, prepare_dispute
 from agents.negotiation import evaluate_counter_offer
 
 
-MERCHANT_API_URL = "http://127.0.0.1:8002"
+MERCHANT_API_URL = os.getenv(
+    "MERCHANT_API_URL",
+    "http://127.0.0.1:8002",
+)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 def map_claim_type(anomaly_type: str) -> str:
@@ -278,13 +283,8 @@ def build_evidence_items(
 
 
 def run_chargeguard_case(transaction_id: str):
-    transactions_path = Path(
-        "datasets/transactions.json"
-    )
-
-    subscriptions_path = Path(
-        "datasets/subscriptions.json"
-    )
+    transactions_path = PROJECT_ROOT / "datasets" / "transactions.json"
+    subscriptions_path = PROJECT_ROOT / "datasets" / "subscriptions.json"
 
     with open(
         transactions_path,

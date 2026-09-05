@@ -11,7 +11,8 @@ app = FastAPI(title="Mock Merchant Support API")
 
 DISPUTES: dict[str, dict] = {}
 
-MERCHANTS_PATH = Path("datasets/merchants.json")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+MERCHANTS_PATH = PROJECT_ROOT / "datasets" / "merchants.json"
 
 
 class EvidenceItem(BaseModel):
