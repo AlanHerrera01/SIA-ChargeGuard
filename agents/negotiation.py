@@ -58,6 +58,11 @@ Return a concise structured recommendation.
 
 
 negotiation_agent = Agent(
+    name="negotiation_agent",
+    description=(
+        "Evaluates merchant counter-offers and recommends whether the user "
+        "should accept the offer or request the full supported refund."
+    ),
     model=MODEL_ID,
     system_prompt=SYSTEM_PROMPT,
     callback_handler=None,

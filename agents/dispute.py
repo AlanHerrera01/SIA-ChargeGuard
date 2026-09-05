@@ -82,6 +82,11 @@ Rules:
 
 
 dispute_agent = Agent(
+    name="dispute_agent",
+    description=(
+        "Writes professional billing dispute messages using validated "
+        "anomaly analysis, refund amounts and supporting evidence."
+    ),
     model=MODEL_ID,
     system_prompt=SYSTEM_PROMPT,
     callback_handler=None,

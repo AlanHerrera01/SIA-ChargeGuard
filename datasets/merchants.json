@@ -1,0 +1,41 @@
+[
+  {
+    "merchant_id": "mrc_netflix",
+    "name": "Netflix",
+    "category": "streaming",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": true,
+      "counter_offer_ratio": 0.6,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 50.0,
+      "escalation_outcome": "resolved_full"
+    }
+  },
+  {
+    "merchant_id": "mrc_spotify",
+    "name": "Spotify",
+    "category": "music",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": true,
+      "counter_offer_ratio": 0.6,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 50.0,
+      "escalation_outcome": "resolved_full"
+    }
+  },
+  {
+    "merchant_id": "mrc_duolingo",
+    "name": "Duolingo",
+    "category": "education",
+    "support_channel": "api",
+    "dispute_policy": {
+      "auto_counter_offer": true,
+      "counter_offer_ratio": 0.6,
+      "response_delay_seconds": 3,
+      "max_refund_usd": 50.0,
+      "escalation_outcome": "resolved_full"
+    }
+  }
+]

@@ -61,6 +61,12 @@ Important rules:
 
 
 charge_analysis_agent = Agent(
+    name="charge_analysis_agent",
+    description=(
+        "Analyzes recurring subscription transactions and classifies "
+        "price increases, duplicate charges, post-cancellation charges, "
+        "or normal charges."
+    ),
     model=MODEL_ID,
     system_prompt=SYSTEM_PROMPT,
     callback_handler=None,
